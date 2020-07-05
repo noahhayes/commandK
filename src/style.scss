@@ -95,6 +95,10 @@ body {
       }
     }
 
+    &.active + .item {
+      border-color: $item-active-color;
+    }
+
     &:active {
       background-color: $item-clicked-color;
       color: $text-color;
@@ -112,7 +116,7 @@ body {
 
     .icon {
       width: 25px;
-      height: 20px;
+      height: 22px;
       background: $icon-color;
       display: flex;
       justify-content: center;
