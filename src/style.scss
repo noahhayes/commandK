@@ -1,0 +1,131 @@
+$container-color: #282B33;
+
+$item-border-color: #3B3D45;
+$item-hover-color: #30333C;
+$item-active-color: #4E5159;
+$item-clicked-color: #6F7178;
+
+$icon-color: #676972;
+$icon-font-size: 12px;
+
+$text-color: #fff;
+$text-active-color: #ddd;
+$text-inactive-color: #aaa;
+
+$search-caret-color: #fff;
+$search-font-size: 20px;
+
+$default-font-size: 14px;
+
+body {
+  background: none;
+  margin: 0;
+}
+
+* {
+  font-family: roboto, sans-serif;
+}
+
+.highlight {
+  font-weight: 500;
+  color: $text-color;
+  background: none;
+
+}
+
+.container {
+  max-height: 320px;
+  width: 320px;
+  background-color: $container-color;
+  display: flex;
+  flex-direction: column;
+  user-select: none;
+
+  .error {
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: $text-color;
+    font-size: $default-font-size;
+
+    a {
+      color: $text-color;
+    }
+  }
+
+  .input {
+    font-size: $search-font-size;
+    border: 0;
+    outline: none;
+    caret-color: $search-caret-color;
+    padding: 17px 15px;
+    margin: 0;
+    background-color: $container-color;
+    color: $text-color;
+    font-weight: 200;
+  }
+
+  .item {
+    padding: 15px 15px;
+    border-top: 1px solid $item-border-color;
+    color: $text-inactive-color;
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+      font-weight: 300;
+
+    &:hover {
+      background-color: $item-hover-color;
+      color: $text-color;
+    }
+
+    &.active {
+      background-color: $item-active-color;
+      border-color: $item-active-color;
+      color: $text-active-color;
+
+      .icon {
+        background-color: white;
+        color: $container-color;
+        font-weight: 400;
+      }
+    }
+
+    &:active {
+      background-color: $item-clicked-color;
+      color: $text-color;
+
+      .icon {
+        background-color: white;
+        color: $container-color;
+        font-weight: 500;
+      }
+    }
+
+    &:last-child {
+      border-right: none;
+    }
+
+    .icon {
+      width: 25px;
+      height: 20px;
+      background: $icon-color;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      weight: 500;
+      border-radius: 4px;
+      font-size: $icon-font-size;
+      color: $text-color
+    }
+
+    .title {
+      font-size: $default-font-size;
+      padding: 0 0 1px;
+    }
+  }
+}
