@@ -34,7 +34,11 @@ class Menu extends Component<IProps, IState> {
   }
 
   render() {
-    const { highlightedItemIndex, searchResults, searchValue }: IState = this.state;
+    const {
+      highlightedItemIndex,
+      searchResults,
+      searchValue
+    }: IState = this.state;
     const { tabID }: IProps = this.props;
 
     return (
@@ -139,12 +143,21 @@ class Menu extends Component<IProps, IState> {
   };
 
   _adjustScrollPosition = (): void => {
-    const scrollHeight: number = this.resultsDiv.scrollHeight;
-    const itemHeight: number = scrollHeight / this.state.searchResults.length;
-    const scrollTop: number = itemHeight * (this.state.highlightedItemIndex - 1);
+    const { highlightedItemIndex, searchResults }: IState = this.state;
 
-    this.resultsDiv.scrollTop = scrollTop;
-  }
+    const scrollHeight: number = this.resultsDiv.scrollHeight;
+    const scrollTop: number = this.resultsDiv.scrollTop;
+    const itemHeight: number = scrollHeight / searchResults.length;
+
+    const newScrollTop: number = itemHeight * (highlightedItemIndex - 2);
+
+    if (
+      (highlightedItemIndex < 3 && scrollTop > 0) ||
+      highlightedItemIndex >= 3
+    ) {
+      this.resultsDiv.scrollTop = newScrollTop;
+    }
+  };
 }
 
 export default Menu;
