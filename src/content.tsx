@@ -77,7 +77,7 @@ const clickFind = (): void => {
   }
 };
 
-// This tells us whether we should accept hotkey presses
+// Determine whether page should accept hotkey presses
 const shouldUseHotKeys = (): boolean => {
   const searchBox: HTMLElement = document.getElementById(
     "aso_search_form_anchor"
