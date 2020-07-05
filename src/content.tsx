@@ -15,22 +15,20 @@ document.onkeyup = (e: KeyboardEvent): void => {
 };
 
 // Triage commands that have been sent from the popup
-chrome.runtime.onMessage.addListener(
-  (actionID: string): void => {
-    const action: IAction = actions.find(action => action.actionID === actionID);
+chrome.runtime.onMessage.addListener((actionID: string): void => {
+  const action: IAction = actions.find(action => action.actionID === actionID);
 
-    switch (actionID) {
-      case "prev":
-        return clickPrev();
-      case "next":
-        return clickNext();
-      case "find":
-        return clickFind();
-      default:
-        return simulateKeyPress(action.keyCode);
-    }
+  switch (actionID) {
+    case "prev":
+      return clickPrev();
+    case "next":
+      return clickNext();
+    case "find":
+      return clickFind();
+    default:
+      return simulateKeyPress(action.keyCode);
   }
-);
+});
 
 // Custom action to click previous period
 const clickPrev = (): void => {
@@ -73,7 +71,12 @@ const clickFind = (): void => {
 
 // Simulate a keypress by injecting a scirpt into the document
 const simulateKeyPress = (keyCode: number): void => {
-  const script: string = 'var keyboardEvent = new KeyboardEvent(\'keypress\', {bubbles:true}); Object.defineProperty(keyboardEvent, \'charCode\', {get:function(){return this.charCodeVal;}}); keyboardEvent.charCodeVal = '+keyCode.toString()+'; document.body.dispatchEvent(keyboardEvent);';
+  const script: string = `
+    var keyboardEvent = new KeyboardEvent('keypress', {bubbles:true});
+    Object.defineProperty(keyboardEvent, 'charCode', {get:function(){return this.charCodeVal;}});
+    keyboardEvent.charCodeVal = ${keyCode.toString()}
+    document.body.dispatchEvent(keyboardEvent);
+  `;
   const injectedScript: HTMLElement = document.createElement("script");
 
   document.documentElement.appendChild(injectedScript);
