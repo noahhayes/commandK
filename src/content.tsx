@@ -16,29 +16,25 @@ document.onkeyup = (e: KeyboardEvent): void => {
 chrome.runtime.onMessage.addListener(
   (actionID: string): void => {
     switch (actionID) {
-      case "today":
-        return clickToday();
       case "prev":
         return clickPrev();
       case "next":
         return clickNext();
       case "find":
         return clickFind();
+      case "today":
+        return pressKey("84");
+      case "day":
+        return pressKey("68");
+      case "week":
+        return pressKey("87");
+      case "month":
+        return pressKey("77");
+      case "year":
+        return pressKey("89");
     }
   }
 );
-
-const clickToday = (): void => {
-  try {
-    const todayButton: HTMLElement = document.querySelector(
-      '[jsname="P6mm8"]'
-    ) as HTMLElement;
-
-    todayButton.click();
-  } catch (error) {
-    console.log("error");
-  }
-};
 
 const clickPrev = (): void => {
   try {
@@ -106,4 +102,17 @@ const shouldUseHotKeys = (): boolean => {
   }
 
   return true;
+};
+
+const pressKey = (keyCode: string): void => {
+  const injectedScript: HTMLElement = document.createElement("script");
+  const script: string = `
+    var keyboardEvent = new KeyboardEvent('keypress', {bubbles:true});
+    Object.defineProperty(keyboardEvent, 'charCode', {get:function(){return this.charCodeVal;}});
+    keyboardEvent.charCodeVal = ${keyCode};
+    document.body.dispatchEvent(keyboardEvent);
+  `;
+  document.documentElement.appendChild(injectedScript);
+  injectedScript.innerHTML = script;
+  document.removeChild(injectedScript);
 };

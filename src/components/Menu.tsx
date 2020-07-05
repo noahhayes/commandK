@@ -8,21 +8,24 @@ interface IProps {
 }
 
 interface IState {
-  highlightedIndex: number;
+  highlightedItemIndex: number;
   searchValue: string;
   searchResults: IAction[];
+  scrollPosition: number;
 }
 
 class Menu extends Component<IProps, IState> {
   private textInput: HTMLInputElement;
+  private resultsDiv: HTMLDivElement;
 
   constructor(props) {
     super(props);
 
     this.state = {
-      highlightedIndex: 0,
+      highlightedItemIndex: 0,
       searchValue: "",
-      searchResults: actions
+      searchResults: actions,
+      scrollPosition: 0
     };
   }
 
@@ -31,7 +34,7 @@ class Menu extends Component<IProps, IState> {
   }
 
   render() {
-    const { highlightedIndex, searchResults, searchValue }: IState = this.state;
+    const { highlightedItemIndex, searchResults, searchValue }: IState = this.state;
     const { tabID }: IProps = this.props;
 
     return (
@@ -44,28 +47,31 @@ class Menu extends Component<IProps, IState> {
           onKeyDown={this._handleKeyDown}
           ref={ref => (this.textInput = ref)}
         />
-        {searchResults.map((action, index) => (
-          <Item
-            key={action.actionID}
-            action={action}
-            isHighlighted={highlightedIndex === index}
-            onClick={() => this._handleItemPress(index)}
-            searchValue={searchValue}
-          />
-        ))}
-        {searchResults.length === 0 &&
+        {searchResults.length > 0 ? (
+          <div className="results" ref={ref => (this.resultsDiv = ref)}>
+            {searchResults.map((action, index) => (
+              <Item
+                key={action.actionID}
+                action={action}
+                isHighlighted={highlightedItemIndex === index}
+                onClick={() => this._handleItemPress(index)}
+                searchValue={searchValue}
+              />
+            ))}
+          </div>
+        ) : (
           <div className="empty">No Results</div>
-        }
+        )}
       </div>
     );
   }
 
   _handleOnChange = (event: React.FormEvent<HTMLInputElement>): void => {
-    const highlightedIndex: number = 0;
+    const highlightedItemIndex: number = 0;
     const searchValue: string = event.currentTarget.value;
     const searchResults: IAction[] = this._filterSearchResults(searchValue);
 
-    this.setState({ highlightedIndex, searchValue, searchResults });
+    this.setState({ highlightedItemIndex, searchValue, searchResults });
   };
 
   _handleKeyDown = (event: React.KeyboardEvent<object>): void => {
@@ -80,28 +86,32 @@ class Menu extends Component<IProps, IState> {
         return this._handleArrowUpPress();
       case 13:
         event.preventDefault();
-        return this._handleItemPress(this.state.highlightedIndex);
+        return this._handleItemPress(this.state.highlightedItemIndex);
     }
   };
 
   _handleArrowUpPress = (): void => {
-    let highlightedIndex: number = this.state.highlightedIndex;
+    let highlightedItemIndex: number = this.state.highlightedItemIndex;
 
-    if (highlightedIndex > 0) {
-      highlightedIndex--;
+    if (highlightedItemIndex > 0) {
+      highlightedItemIndex--;
+
+      this._adjustScrollPosition();
     }
 
-    this.setState({ highlightedIndex });
+    this.setState({ highlightedItemIndex });
   };
 
   _handleArrowDownPress = (): void => {
-    let highlightedIndex: number = this.state.highlightedIndex;
+    let highlightedItemIndex: number = this.state.highlightedItemIndex;
 
-    if (highlightedIndex < this.state.searchResults.length - 1) {
-      highlightedIndex++;
+    if (highlightedItemIndex < this.state.searchResults.length - 1) {
+      highlightedItemIndex++;
+
+      this._adjustScrollPosition();
     }
 
-    this.setState({ highlightedIndex });
+    this.setState({ highlightedItemIndex });
   };
 
   _handleItemPress = (index: number): void => {
@@ -127,6 +137,14 @@ class Menu extends Component<IProps, IState> {
 
     return searchResults;
   };
+
+  _adjustScrollPosition = (): void => {
+    const scrollHeight: number = this.resultsDiv.scrollHeight;
+    const itemHeight: number = scrollHeight / this.state.searchResults.length;
+    const scrollTop: number = itemHeight * (this.state.highlightedItemIndex - 1);
+
+    this.resultsDiv.scrollTop = scrollTop;
+  }
 }
 
 export default Menu;

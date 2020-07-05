@@ -13,7 +13,7 @@ interface IProps {
 class Item extends Component<IProps> {
   render() {
     const { isHighlighted, searchValue, onClick }: IProps = this.props;
-    const { key, char, title }: IAction = this.props.action;
+    const { char, title }: IAction = this.props.action;
 
     return (
       <div
