@@ -67,6 +67,12 @@ body {
     font-weight: 200;
   }
 
+  .empty {
+    padding: 15px 15px;
+    border-top: 1px solid $item-border-color;
+    color: $text-inactive-color;
+  }
+
   .item {
     padding: 15px 15px;
     border-top: 1px solid $item-border-color;

@@ -53,6 +53,9 @@ class Menu extends Component<IProps, IState> {
             searchValue={searchValue}
           />
         ))}
+        {searchResults.length === 0 &&
+          <div className="empty">No Results</div>
+        }
       </div>
     );
   }
