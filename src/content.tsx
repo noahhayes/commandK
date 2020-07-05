@@ -1,3 +1,5 @@
+import { IAction, actions } from "./data/actions";
+
 // Hijack the keyboard and add some hot keys
 document.onkeyup = (e: KeyboardEvent): void => {
   if (shouldUseHotKeys()) {
@@ -15,6 +17,8 @@ document.onkeyup = (e: KeyboardEvent): void => {
 // Triage commands that have been sent from the popup
 chrome.runtime.onMessage.addListener(
   (actionID: string): void => {
+    const action: IAction = actions.find(action => action.actionID === actionID);
+
     switch (actionID) {
       case "prev":
         return clickPrev();
@@ -22,20 +26,13 @@ chrome.runtime.onMessage.addListener(
         return clickNext();
       case "find":
         return clickFind();
-      case "today":
-        return pressKey("84");
-      case "day":
-        return pressKey("68");
-      case "week":
-        return pressKey("87");
-      case "month":
-        return pressKey("77");
-      case "year":
-        return pressKey("89");
+      default:
+        return simulateKeyPress(action.keyCode);
     }
   }
 );
 
+// Custom action to click previous period
 const clickPrev = (): void => {
   try {
     const prevButton: HTMLElement = document.querySelector(
@@ -44,11 +41,11 @@ const clickPrev = (): void => {
 
     prevButton.click();
   } catch (error) {
-    alert(error);
     console.log("error");
   }
 };
 
+// Custom action to click next period
 const clickNext = (): void => {
   try {
     const nextButton: HTMLElement = document.querySelector(
@@ -61,6 +58,7 @@ const clickNext = (): void => {
   }
 };
 
+// Custom action to open search box
 const clickFind = (): void => {
   try {
     const searchButton: HTMLElement = document.querySelector(
@@ -71,6 +69,16 @@ const clickFind = (): void => {
   } catch (error) {
     console.log("error");
   }
+};
+
+// Simulate a keypress by injecting a scirpt into the document
+const simulateKeyPress = (keyCode: number): void => {
+  const script: string = 'var keyboardEvent = new KeyboardEvent(\'keypress\', {bubbles:true}); Object.defineProperty(keyboardEvent, \'charCode\', {get:function(){return this.charCodeVal;}}); keyboardEvent.charCodeVal = '+keyCode.toString()+'; document.body.dispatchEvent(keyboardEvent);';
+  const injectedScript: HTMLElement = document.createElement("script");
+
+  document.documentElement.appendChild(injectedScript);
+  injectedScript.innerHTML = script;
+  document.documentElement.removeChild(injectedScript);
 };
 
 // Determine whether page should accept hotkey presses
@@ -102,17 +110,4 @@ const shouldUseHotKeys = (): boolean => {
   }
 
   return true;
-};
-
-const pressKey = (keyCode: string): void => {
-  const injectedScript: HTMLElement = document.createElement("script");
-  const script: string = `
-    var keyboardEvent = new KeyboardEvent('keypress', {bubbles:true});
-    Object.defineProperty(keyboardEvent, 'charCode', {get:function(){return this.charCodeVal;}});
-    keyboardEvent.charCodeVal = ${keyCode};
-    document.body.dispatchEvent(keyboardEvent);
-  `;
-  document.documentElement.appendChild(injectedScript);
-  injectedScript.innerHTML = script;
-  document.removeChild(injectedScript);
 };
