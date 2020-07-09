@@ -10,9 +10,9 @@ interface IProps {
 
 interface IState {
   highlightedItemIndex: number;
+  scrollPosition: number;
   searchValue: string;
   searchResults: IAction[];
-  scrollPosition: number;
 }
 
 class Menu extends Component<IProps, IState> {
@@ -24,9 +24,9 @@ class Menu extends Component<IProps, IState> {
 
     this.state = {
       highlightedItemIndex: 0,
+      scrollPosition: 0,
       searchValue: "",
-      searchResults: actions,
-      scrollPosition: 0
+      searchResults: actions
     };
   }
 
@@ -50,7 +50,7 @@ class Menu extends Component<IProps, IState> {
       <div className="innerContainer">
         <input
           className="input"
-          placeholder="Type a command"
+          placeholder="Type a command..."
           value={searchValue}
           onChange={this._handleInputOnChange}
           ref={ref => (this.textInput = ref)}
@@ -77,9 +77,9 @@ class Menu extends Component<IProps, IState> {
   _onKeyDown = (e: KeyboardEvent): void => {
     switch (e.keyCode) {
       case 40:
-        return this._handleArrowDownPress();
+        return this._handleArrowPress('down');
       case 38:
-        return this._handleArrowUpPress();
+        return this._handleArrowPress('up');
       case 13:
         return this._handleItemPress(this.state.highlightedItemIndex);
     }
@@ -93,22 +93,16 @@ class Menu extends Component<IProps, IState> {
     this.setState({ highlightedItemIndex, searchValue, searchResults });
   };
 
-  _handleArrowUpPress = (): void => {
+  _handleArrowPress = (direction: string): void => {
     let highlightedItemIndex: number = this.state.highlightedItemIndex;
 
-    if (highlightedItemIndex > 0) {
+    if (direction === 'up' && highlightedItemIndex > 0) {
       highlightedItemIndex--;
 
       this._adjustScrollPosition();
     }
 
-    this.setState({ highlightedItemIndex });
-  };
-
-  _handleArrowDownPress = (): void => {
-    let highlightedItemIndex: number = this.state.highlightedItemIndex;
-
-    if (highlightedItemIndex < this.state.searchResults.length - 1) {
+    if (direction === 'down' && highlightedItemIndex < this.state.searchResults.length - 1) {
       highlightedItemIndex++;
 
       this._adjustScrollPosition();

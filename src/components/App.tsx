@@ -1,11 +1,8 @@
 import React, { Component } from "react";
 import Menu from "./Menu";
-import { IAction, actions } from "../data/actions";
-import {
-  shouldUseHotKeys,
-  performAction
-} from "../lib";
+import { shouldUseHotKeys, shouldUseCommandKey, shouldDisplayButton, performAction } from "../lib";
 import "../style.scss";
+import { BUTTON_TITLE } from "../config";
 
 interface IState {
   isMenuVisible: boolean;
@@ -37,15 +34,15 @@ class App extends Component<{}, IState> {
 
     return (
       <div>
-        <button onClick={this._toggleMenu} className="button">
-          ⌘K
-        </button>
+        {shouldDisplayButton() &&
+          <button onClick={this._toggleMenu} className="button">
+            {BUTTON_TITLE}
+          </button>
+        }
         {isMenuVisible && (
           <div>
             <div className="outerContainer" onClick={this._toggleMenu} />
-            <Menu
-              toggleMenu={this._toggleMenu}
-            />
+            <Menu toggleMenu={this._toggleMenu} />
           </div>
         )}
       </div>
@@ -53,40 +50,44 @@ class App extends Component<{}, IState> {
   }
 
   _onKeyDown = (e: KeyboardEvent): void => {
-    if (shouldUseHotKeys()) {
-      if (!this.state.isMenuVisible) {
-        switch (e.keyCode) {
-          case 37:
-            return performAction("prev"); //Left
-          case 39:
-            return performAction("next"); //Right
-          case 70:
-            return performAction("find"); //F
-        }
-      }
+    const { isMenuVisible, isCommandPressed }: IState = this.state;
 
+    if (shouldUseHotKeys() && !isMenuVisible) {
       switch (e.keyCode) {
-        case 75:
-          return this.state.isCommandPressed && this._toggleMenu(); //K
+        case 37:
+          return performAction("prev");
+        case 39:
+          return performAction("next");
+      }
+    }
+
+    if (shouldUseCommandKey()) {
+      switch (e.keyCode) {
         case 91:
         case 93:
-          this.setState({ isCommandPressed: true }); //CMD
+          return this.setState({ isCommandPressed: true });
+        case 75:
+          return isCommandPressed && this._toggleMenu();
       }
     }
   };
 
   _onKeyUp = (e: KeyboardEvent): void => {
-    if (shouldUseHotKeys() && (e.keyCode === 91 || e.keyCode === 93)) {
-      this.setState({ isCommandPressed: false });
+    const { isMenuVisible }: IState = this.state;
+
+    if (shouldUseHotKeys() && !isMenuVisible && e.keyCode === 70) {
+      return performAction("find");
+    }
+
+    if (shouldUseCommandKey() && (e.keyCode === 91 || e.keyCode === 93)) {
+      return this.setState({ isCommandPressed: false });
     }
   };
 
   _toggleMenu = (): void => {
-    const { isMenuVisible }: IState = this.state;
-//alert('here')
-    this.setState({
+    this.setState(({ isMenuVisible }) => ({
       isMenuVisible: !isMenuVisible
-    });
+    }));
   };
 }
 

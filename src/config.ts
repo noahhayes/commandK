@@ -1,5 +1,4 @@
-export const G_DOMAIN: string = "calendar.google.com";
-export const G_URL: string = "https://calendar.google.com";
+export const BUTTON_TITLE : string = "⌘K";
 
-export const APP_PARENT_SELECTOR: string = '[jsname="BqZEe"]';
+export const APP_PARENT_SELECTOR: string = '.gb_2d.gb_ke';
 export const APP_CONTAINER_ID: string = 'commandKApp';

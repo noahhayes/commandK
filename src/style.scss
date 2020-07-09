@@ -18,6 +18,10 @@ $search-font-size: 20px;
 
 $default-font-size: 14px;
 
+::-webkit-scrollbar {
+  width: 0px;
+}
+
 body {
   background: none;
   margin: 0;
@@ -38,7 +42,7 @@ body {
   border-radius: 4px;
   background: none;
   height: 36px;
-  margin: 0 5px 0 10px;
+  margin: 6px 5px 0 10px;
   color: #333;
   width: 40px;
   font-size: 14px;
@@ -72,13 +76,13 @@ body {
   left: 50%;
   top: 50%;
   margin: 100px 0 0 -250px;
-  max-height: 325px;
+  max-height: 361px;
   width: 500px;
   background-color: $innerContainer-color;
   display: flex;
   flex-direction: column;
   user-select: none;
-  box-shadow: 0 0 150px 0 rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 150px 0 rgba(0, 0, 0, 0.4);
 
   .error {
     height: 200px;
@@ -99,7 +103,7 @@ body {
     border: 0;
     outline: none;
     caret-color: $search-caret-color;
-    padding: 17px 15px;
+    padding: 20px 15px;
     margin: 0;
     background-color: $innerContainer-color;
     color: $text-color;

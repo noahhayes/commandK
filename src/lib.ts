@@ -30,16 +30,44 @@ export const shouldUseHotKeys = (): boolean => {
   const address: string = window.location.href;
 
   if (
-    //(isMenuOpen && e.keyCode !== 75 && e.keyCode !== 91 && e.keyCode !== 93) ||
-    // the search box is open
-    (searchBox && searchBox.className === "gb_8e gb_Ff gb_9e") ||
-    // the event card is open
+    (searchBox && searchBox.className === "gb_9e gb_Hf gb_af") ||
     document.body.contains(eventCard) ||
-    // the contact input is open
     contactInput.getAttribute("data-expanded") === "true" ||
-    // on the edit page
     address.indexOf("eventedit") >= 0 ||
-    // on the settings page
+    address.indexOf("settings") >= 0
+  ) {
+    return false;
+  }
+
+  return true;
+}
+
+export const shouldUseCommandKey = (): boolean => {
+  const contactInput: HTMLElement = document.querySelector(
+    ".d1dlne.WvJxMd"
+  ) as HTMLElement;
+  const eventCard: HTMLElement = document.querySelector(
+    ".RDlrG.Inn9w.iWO5td"
+  ) as HTMLElement;
+  const address: string = window.location.href;
+
+  if (
+    document.body.contains(eventCard) ||
+    contactInput.getAttribute("data-expanded") === "true" ||
+    address.indexOf("eventedit") >= 0 ||
+    address.indexOf("settings") >= 0
+  ) {
+    return false;
+  }
+
+  return true;
+}
+
+export const shouldDisplayButton = (): boolean => {
+  const address: string = window.location.href;
+
+  if (
+    address.indexOf("eventedit") >= 0 ||
     address.indexOf("settings") >= 0
   ) {
     return false;
