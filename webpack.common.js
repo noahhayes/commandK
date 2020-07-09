@@ -2,7 +2,6 @@ const path = require("path");
 
 module.exports = {
   entry: {
-    popup: path.join(__dirname, "src/popup.tsx"),
     content: path.join(__dirname, "src/content.tsx")
   },
   output: {

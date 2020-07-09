@@ -1,10 +1,11 @@
 import React, { Component } from "react";
 import Item from "./Item";
 import { IAction, actions } from "../data/actions";
+import { performAction } from "../lib";
 import "../style.scss";
 
 interface IProps {
-  tabID: number;
+  toggleMenu: Function;
 }
 
 interface IState {
@@ -30,7 +31,12 @@ class Menu extends Component<IProps, IState> {
   }
 
   componentDidMount() {
+    document.addEventListener("keydown", this._onKeyDown);
     this.textInput.focus();
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener("keydown", this._onKeyDown);
   }
 
   render() {
@@ -39,16 +45,14 @@ class Menu extends Component<IProps, IState> {
       searchResults,
       searchValue
     }: IState = this.state;
-    const { tabID }: IProps = this.props;
 
     return (
-      <div className="container">
+      <div className="innerContainer">
         <input
           className="input"
           placeholder="Type a command"
           value={searchValue}
-          onChange={this._handleOnChange}
-          onKeyDown={this._handleKeyDown}
+          onChange={this._handleInputOnChange}
           ref={ref => (this.textInput = ref)}
         />
         {searchResults.length > 0 ? (
@@ -70,28 +74,23 @@ class Menu extends Component<IProps, IState> {
     );
   }
 
-  _handleOnChange = (event: React.FormEvent<HTMLInputElement>): void => {
+  _onKeyDown = (e: KeyboardEvent): void => {
+    switch (e.keyCode) {
+      case 40:
+        return this._handleArrowDownPress();
+      case 38:
+        return this._handleArrowUpPress();
+      case 13:
+        return this._handleItemPress(this.state.highlightedItemIndex);
+    }
+  };
+
+  _handleInputOnChange = (event: React.FormEvent<HTMLInputElement>): void => {
     const highlightedItemIndex: number = 0;
     const searchValue: string = event.currentTarget.value;
     const searchResults: IAction[] = this._filterSearchResults(searchValue);
 
     this.setState({ highlightedItemIndex, searchValue, searchResults });
-  };
-
-  _handleKeyDown = (event: React.KeyboardEvent<object>): void => {
-    const keyCode: number = event.keyCode;
-
-    switch (keyCode) {
-      case 40:
-        event.preventDefault();
-        return this._handleArrowDownPress();
-      case 38:
-        event.preventDefault();
-        return this._handleArrowUpPress();
-      case 13:
-        event.preventDefault();
-        return this._handleItemPress(this.state.highlightedItemIndex);
-    }
   };
 
   _handleArrowUpPress = (): void => {
@@ -119,12 +118,11 @@ class Menu extends Component<IProps, IState> {
   };
 
   _handleItemPress = (index: number): void => {
-    const { tabID }: IProps = this.props;
     const { actionID }: IAction = this.state.searchResults[index];
 
-    chrome.tabs.sendMessage(tabID, actionID);
+    this.props.toggleMenu();
 
-    return window.close();
+    performAction(actionID);
   };
 
   _filterSearchResults = (searchValue: string): IAction[] => {
